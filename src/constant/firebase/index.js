@@ -7,12 +7,12 @@ import "firebase/messaging"; // for cloud messaging
 import "firebase/functions"; // for cloud functions
 
 const config = {
-  apiKey: "AIzaSyCX52d_eJ42PEl0jXdfj_GqHa3fi8URvOc",
-  authDomain: "websadiqulislam.firebaseapp.com",
-  databaseURL: "https://websadiqulislam.firebaseio.com",
-  projectId: "websadiqulislam",
-  storageBucket: "websadiqulislam.appspot.com",
-  messagingSenderId: "576546393592"
+  apiKey: "AIzaSyDyaC7RrBFuzIhLC_tdfRt8mQb-hxPtJR8",
+  authDomain: "inspectionform-364ca.firebaseapp.com",
+  databaseURL: "https://inspectionform-364ca.firebaseio.com",
+  projectId: "inspectionform-364ca",
+  storageBucket: "inspectionform-364ca.appspot.com",
+  messagingSenderId: "566949544267"
 };
 firebase.initializeApp(config);
 

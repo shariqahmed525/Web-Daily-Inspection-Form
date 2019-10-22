@@ -14,10 +14,10 @@ export const allForm = allForm => {
   };
 };
 
-export const allUsers = allUsers => {
+export const users = users => {
   return {
-    type: "ALL_USERS",
-    allUsers
+    type: "USERS",
+    users
   };
 };
 
@@ -46,9 +46,9 @@ export const getAllForms = () => {
   }
 }
 
-export const getAllUsers = () => {
+export const getUsers = () => {
   return (dispatch) => {
-    FIRESTORE.collection("allUsers")
+    FIRESTORE.collection("users")
       .orderBy("timeStamp", "asc")
       .onSnapshot(snap => {
         let arr = [];
@@ -57,7 +57,7 @@ export const getAllUsers = () => {
           obj.id = doc.id;
           arr.push(obj);
         });
-        dispatch(allUsers(arr));
+        dispatch(users(arr));
       });
   }
 }
