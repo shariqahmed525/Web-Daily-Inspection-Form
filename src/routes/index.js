@@ -5,7 +5,7 @@ import Home from '../screens/home/Home';
 
 const history = createBrowserHistory();
 
-export default Routes = () => {
+const Routes = () => {
   return (
     <Router history={history}>
       <Switch>
@@ -13,4 +13,6 @@ export default Routes = () => {
       </Switch>
     </Router>
   )
-}
+};
+
+export default Routes;

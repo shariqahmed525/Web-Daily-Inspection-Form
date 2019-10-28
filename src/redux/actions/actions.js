@@ -1,4 +1,4 @@
-import { FIRESTORE } from '../../constants/firebase';
+import { FIRESTORE } from '../../constant/firebase';
 
 export const loader = loader => {
   return {

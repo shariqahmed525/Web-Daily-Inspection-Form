@@ -5,9 +5,9 @@ import {
   getUsers,
   getAllForms,
 } from "./redux/actions/actions";
-import { store } from "./redux/store/store";
+import store from "./redux/store/store";
 
-export default App = () => {
+const App = () => {
 
   useEffect(() => {
     store.dispatch(getUsers());
@@ -15,4 +15,6 @@ export default App = () => {
   }, []);
 
   return <Routes />;
-}
+};
+
+export default App;
