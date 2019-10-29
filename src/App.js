@@ -1,20 +1,32 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Routes from './routes';
+import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 
-import {
-  getUsers,
-  getAllForms,
-} from "./redux/actions/actions";
-import store from "./redux/store/store";
+import { GreenColor } from './constant/colors';
+
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: GreenColor
+    },
+    secondary: {
+      main: GreenColor
+    },
+  },
+  status: {
+    danger: 'orange',
+  },
+});
 
 const App = () => {
-
-  useEffect(() => {
-    store.dispatch(getUsers());
-    store.dispatch(getAllForms());
-  }, []);
-
-  return <Routes />;
+  return (
+    <ThemeProvider theme={theme}>
+      <Routes />
+    </ThemeProvider>
+  );
 };
 
 export default App;
+

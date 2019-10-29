@@ -1,4 +1,7 @@
 import React from 'react'
+import {
+  useHistory
+} from "react-router-dom";
 
 import {
   ChevronLeft,
@@ -24,6 +27,7 @@ import {
   drawableItems,
   drawableItemsForMe,
 } from '../../constant/helper';
+import { AUTH } from '../../constant/firebase';
 
 const drawerWidth = 240;
 
@@ -48,6 +52,7 @@ const Drawable = props => {
 
   const theme = useTheme();
   const classes = useStyles();
+  const history = useHistory();
   const { open, onClick } = props;
 
   return (
@@ -78,7 +83,15 @@ const Drawable = props => {
       <Divider />
       <List>
         {drawableItemsForMe.map((v, i) => (
-          <ListItem button key={i}>
+          <ListItem
+            button
+            key={i}
+            onClick={() => v.route === "" ?
+              AUTH.signOut().then(() => {
+
+              }) :
+              history.push(v.route)}
+          >
             <ListItemIcon>
               {v.icon}
             </ListItemIcon>

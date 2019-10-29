@@ -3,6 +3,9 @@ const reducer = (state = {}, action) => {
     case "IS_LOGIN": {
       return { ...state, isLogin: action.isLogin };
     }
+    case "LOGIN_USER": {
+      return { ...state, email: action.email, password: action.password, uid: action.uid, };
+    }
     case "LOADER": {
       return { ...state, loader: action.loader };
     }
