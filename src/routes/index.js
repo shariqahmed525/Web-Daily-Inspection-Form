@@ -31,20 +31,31 @@ const history = createBrowserHistory();
 
 const Routes = () => {
 
-  const [isLogin, setIsLogin] = useState(false)
+  const [isLogin, setIsLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [previousRoute, setPreviousRoute] = useState("");
 
   useEffect(() => {
+    store.subscribe(getStateFromRedux);
     AUTH.onAuthStateChanged(user => {
       if (user) {
         setIsLogin(true);
-        history.push("/");
+        previousRoute ?
+          history.push(previousRoute) :
+          history.push("/");
         store.dispatch(getUsers());
         store.dispatch(getAllForms());
       } else {
         setIsLogin(false);
       }
+      setIsLoading(false);
     });
-  }, [])
+  }, [previousRoute])
+
+  const getStateFromRedux = () => {
+    const { reducer } = store.getState();
+    setPreviousRoute(reducer.previousRoute);
+  }
 
   return (
     <Router history={history}>
@@ -70,7 +81,13 @@ const Routes = () => {
           path="/changepassword"
           component={ChangePassword}
         />
-        <Route path="/login" component={Login} />
+        {!isLoading ? (
+          <Route path="/login" component={Login} />
+        ) : (
+            <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+              Loading....
+            </p>
+          )}
       </Switch>
     </Router>
   )
@@ -86,7 +103,10 @@ const PrivateRoute = ({ component: Component, login, ...rest }) => {
         ) : (
             <Redirect
               to={{
-                pathname: "/login"
+                pathname: "/login",
+                state: {
+                  previousRoute: rest.path
+                }
               }}
             />
           )

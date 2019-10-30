@@ -2,8 +2,9 @@ import React from 'react';
 import Routes from './routes';
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
-
+import { Provider } from 'react-redux';
 import { GreenColor } from './constant/colors';
+import store from './redux/store/store';
 
 
 const theme = createMuiTheme({
@@ -16,15 +17,17 @@ const theme = createMuiTheme({
     },
   },
   status: {
-    danger: 'orange',
+    danger: GreenColor,
   },
 });
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <Routes />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Routes />
+      </ThemeProvider>
+    </Provider>
   );
 };
 

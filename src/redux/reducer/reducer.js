@@ -15,6 +15,9 @@ const reducer = (state = {}, action) => {
     case "ALL_FORMS": {
       return { ...state, allForm: action.allForm };
     }
+    case "PREVIOUS_ROUTE": {
+      return { ...state, previousRoute: action.previousRoute };
+    }
     default: {
       return state;
     }

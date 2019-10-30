@@ -61,3 +61,12 @@ export const getUsers = () => {
       });
   }
 }
+
+export const createUser = (email, password) => {
+  return () => {
+    FIRESTORE.collection("users").add({
+      email,
+      password,
+    })
+  }
+}

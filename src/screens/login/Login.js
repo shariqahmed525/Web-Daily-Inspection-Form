@@ -1,10 +1,9 @@
 import React, {
   useState
 } from 'react';
-import clsx from 'clsx';
 
 import {
-  useHistory
+  useLocation,
 } from "react-router-dom";
 
 import AppBar from '../../components/appBar/AppBar';
@@ -13,18 +12,9 @@ import ColorButton from '../../components/button/Button';
 import {
   Paper,
   Grid,
-  Input,
-  TextField,
-  InputLabel,
-  IconButton,
-  FormControl,
-  FormHelperText,
-  InputAdornment,
 } from '@material-ui/core';
 import {
   Send,
-  Visibility,
-  VisibilityOff,
 } from '@material-ui/icons';
 import {
   AUTH
@@ -37,6 +27,8 @@ import {
 } from '../../constant/helper';
 
 import store from '../../redux/store/store';
+import PasswordField from '../../components/passwordField/PasswordField';
+import EmailField from '../../components/emailField/EmailField';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -54,11 +46,6 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     color: theme.palette.text.secondary,
   },
-  textField: {
-    width: "90%",
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-  },
   logo: {
     width: 120,
     height: 120,
@@ -67,20 +54,32 @@ const useStyles = makeStyles(theme => ({
   margin: {
     margin: theme.spacing(2),
   },
+  error: {
+    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
+    color: "#f44336",
+    fontSize: "0.75rem",
+    fontWeight: 400,
+  }
 }));
 
 const Login = () => {
   const classes = useStyles();
-  const history = useHistory();
+  const { state } = useLocation();
+
+  store.dispatch({
+    type: "PREVIOUS_ROUTE",
+    previousRoute: state.previousRoute
+  })
 
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [error, setError] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const validate = () => {
-    if (!email) {
+    if (!email.trim()) {
       setEmailError("Please enter email.");
       return;
     }
@@ -88,12 +87,12 @@ const Login = () => {
       setEmailError("Invalid email.");
       return;
     }
-    if (!password) {
+    if (!password.trim()) {
       setPasswordError("Please enter password.");
       return;
     }
-    if (password.length < 6) {
-      setPasswordError("Password contains atleast 6 characters.");
+    if (password.trim().length < 6) {
+      setPasswordError("Password must be greater than 5 characters.");
       return;
     }
 
@@ -104,8 +103,12 @@ const Login = () => {
         type: "LOGIN_USER",
         uid: res.user.uid,
       })
-      // history.push("/");
     }).catch(err => {
+      if (err.code === "auth/user-not-found") {
+        setError(`There is no user found who use this email "${email}"`);
+      } else if (err.code === "auth/wrong-password") {
+        setError(`Wrong password`);
+      }
       console.log(err, " error in dashboard login");
     })
   }
@@ -118,55 +121,35 @@ const Login = () => {
         justify="center"
         alignItems="center"
       >
-        <Grid item xs={12} sm={12} md={6} justify="center">
+        <Grid item xs={12} sm={12} md={6}>
           <Paper className={classes.paper}>
             <img
               alt="Not found!"
               className={classes.logo}
               src={require('../../images/launch-icon.png')}
             />
-            <TextField
-              required
-              type="email"
+
+            <EmailField
               value={email}
-              label="Email"
-              margin="normal"
-              id="standard-error"
               error={emailError}
-              helperText={emailError}
-              className={classes.textField}
               onChange={({ target }) => {
                 setEmailError("");
                 setEmail(target.value);
               }}
             />
-            <FormControl className={clsx(classes.margin, classes.textField)}>
-              <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
-              <Input
-                id="standard-adornment-password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={({ target }) => {
-                  setPasswordError("");
-                  setPassword(target.value)
-                }}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              {passwordError && (
-                <FormHelperText id="standard-weight-helper-text">
-                  {passwordError}
-                </FormHelperText>
-              )}
-            </FormControl>
+
+            <PasswordField
+              title="Password"
+              value={password}
+              error={passwordError}
+              showPassword={showPassword}
+              onChange={({ target }) => {
+                setPasswordError("");
+                setPassword(target.value)
+              }}
+              onEyeClick={() => setShowPassword(!showPassword)}
+            />
+            <p className={classes.error}>{error}</p>
             <ColorButton
               color="primary"
               endIcon={<Send />}

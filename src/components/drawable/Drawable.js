@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  useHistory
+  useHistory,
 } from "react-router-dom";
 
 import {
@@ -72,7 +72,11 @@ const Drawable = props => {
       <Divider />
       <List>
         {drawableItems.map((v, i) => (
-          <ListItem button key={i}>
+          <ListItem
+            button
+            key={i}
+            onClick={() => history.push(v.route)}
+          >
             <ListItemIcon>
               {v.icon}
             </ListItemIcon>
@@ -86,11 +90,11 @@ const Drawable = props => {
           <ListItem
             button
             key={i}
-            onClick={() => v.route === "" ?
-              AUTH.signOut().then(() => {
-
-              }) :
-              history.push(v.route)}
+            onClick={() => {
+              v.route ?
+                history.push(v.route) :
+                AUTH.signOut()
+            }}
           >
             <ListItemIcon>
               {v.icon}
