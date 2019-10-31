@@ -1,5 +1,6 @@
 import React, {
-  useState
+  useState,
+  useEffect
 } from 'react';
 import {
   useHistory
@@ -25,9 +26,10 @@ import {
 } from '@material-ui/core/styles';
 
 
-import store from '../../redux/store/store';
+import { store } from '../../redux/store/store';
 import PasswordField from '../../components/passwordField/PasswordField';
 import Drawable from '../../components/drawable/Drawable';
+import { route, updatePassword } from '../../redux/actions/actions.js';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -71,16 +73,19 @@ const ChangePassword = () => {
   const classes = useStyles();
   let history = useHistory();
 
+  const [uid, setUid] = useState("")
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [cPassword, setCPassword] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
   const [showPassword, setShowPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [cPasswordError, setCPasswordError] = useState("");
 
-  const validate = () => {
+  const validate = async () => {
     if (!password.trim()) {
       setPasswordError("Please enter password.");
       return;
@@ -102,17 +107,31 @@ const ChangePassword = () => {
       return;
     }
     setLoading(true);
-    // AUTH.createUserWithEmailAndPassword(email, password).then((res) => {
-    //   history.replace('/users');
-    //   store.dispatch(createUser(email, password));
-    // }).catch(err => {
-    //   setLoading(false);
-    //   if (err.code === "auth/email-already-in-use") {
-    //     setError(err.message);
-    //   }
-    //   console.log(err, " error in new user");
-    // })
+    try {
+      const { user } = await AUTH.signInWithEmailAndPassword(userEmail, userPassword);
+      try {
+        await user.updatePassword(password)
+        store.dispatch(updatePassword(uid, password));
+        history.push('/');
+      } catch (err) {
+        setLoading(false);
+        console.log(err, " error in change admin password");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error, " error in change password login");
+    }
   }
+
+  useEffect(() => {
+    const { reducer } = store.getState();
+    const { user, uid } = reducer;
+    setUid(uid);
+    setUserEmail(user.email);
+    setUserPassword(user.password);
+    store.dispatch(route("/changepassword"));
+    return () => store.dispatch(route("/"));
+  }, [])
 
   return (
     <div className={classes.root}>

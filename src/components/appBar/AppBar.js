@@ -30,11 +30,15 @@ const useStyles = makeStyles(theme => ({
   hide: {
     display: 'none',
   },
+  title: {
+    textAlign: 'center',
+    width: '100%',
+  }
 }));
 
 const ApplicationBar = props => {
   const classes = useStyles();
-  const { open, onClick } = props;
+  const { open, onClick, login } = props;
   return (
     <AppBar
       position="fixed"
@@ -43,7 +47,7 @@ const ApplicationBar = props => {
       })}
     >
       <Toolbar>
-        <IconButton
+        {!login && <IconButton
           edge="start"
           color="inherit"
           onClick={onClick}
@@ -51,8 +55,8 @@ const ApplicationBar = props => {
           className={clsx(classes.menuButton, open && classes.hide)}
         >
           <Menu />
-        </IconButton>
-        <Typography variant="h6" noWrap>
+        </IconButton>}
+        <Typography variant="h6" noWrap className={login && classes.title}>
           Daily Inspection Form
         </Typography>
       </Toolbar>

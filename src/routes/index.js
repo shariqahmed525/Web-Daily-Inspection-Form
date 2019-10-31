@@ -13,7 +13,7 @@ import {
 } from "history";
 
 import Home from '../screens/home/Home';
-import store from '../redux/store/store';
+import { store } from '../redux/store/store';
 import Users from "../screens/users/Users";
 import Login from "../screens/login/Login";
 import NewUser from "../screens/newUser/NewUser";
@@ -22,6 +22,8 @@ import ChangePassword from "../screens/changePassword/ChangePassword";
 import {
   getUsers,
   getAllForms,
+  uid,
+  getUser,
 } from "../redux/actions/actions";
 import {
   AUTH
@@ -31,30 +33,32 @@ const history = createBrowserHistory();
 
 const Routes = () => {
 
+  const [route, setRoute] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [previousRoute, setPreviousRoute] = useState("");
 
   useEffect(() => {
-    store.subscribe(getStateFromRedux);
+    getStateFromRedux();
     AUTH.onAuthStateChanged(user => {
       if (user) {
         setIsLogin(true);
-        previousRoute ?
-          history.push(previousRoute) :
+        route ?
+          history.push(route) :
           history.push("/");
         store.dispatch(getUsers());
-        store.dispatch(getAllForms());
+        store.dispatch(uid(user.uid));
+        store.dispatch(getUser(user.uid));
       } else {
         setIsLogin(false);
       }
       setIsLoading(false);
     });
-  }, [previousRoute])
+  }, [route])
+  store.dispatch(getAllForms());
 
   const getStateFromRedux = () => {
     const { reducer } = store.getState();
-    setPreviousRoute(reducer.previousRoute);
+    setRoute(reducer.route);
   }
 
   return (
@@ -67,16 +71,19 @@ const Routes = () => {
           component={Home}
         />
         <PrivateRoute
+          exact
           login={isLogin}
           path="/newuser"
           component={NewUser}
         />
         <PrivateRoute
+          exact
           path="/users"
           login={isLogin}
           component={Users}
         />
         <PrivateRoute
+          exact
           login={isLogin}
           path="/changepassword"
           component={ChangePassword}
@@ -84,9 +91,7 @@ const Routes = () => {
         {!isLoading ? (
           <Route path="/login" component={Login} />
         ) : (
-            <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-              Loading....
-            </p>
+            <Loader />
           )}
       </Switch>
     </Router>
@@ -105,7 +110,7 @@ const PrivateRoute = ({ component: Component, login, ...rest }) => {
               to={{
                 pathname: "/login",
                 state: {
-                  previousRoute: rest.path
+                  route: rest.path
                 }
               }}
             />
@@ -114,5 +119,11 @@ const PrivateRoute = ({ component: Component, login, ...rest }) => {
     />
   );
 };
+
+const Loader = () => (
+  <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    Loading....
+  </p>
+)
 
 export default Routes;

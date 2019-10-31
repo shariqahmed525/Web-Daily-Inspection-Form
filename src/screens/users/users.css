@@ -1,0 +1,7 @@
+.MuiToolbar-root .MuiToolbar-regular .MuiTablePagination-toolbar .MuiToolbar-gutters{
+  margin-top: 10 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}

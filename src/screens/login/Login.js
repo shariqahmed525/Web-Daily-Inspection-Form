@@ -1,5 +1,6 @@
 import React, {
-  useState
+  useState,
+  useEffect
 } from 'react';
 
 import {
@@ -26,9 +27,10 @@ import {
   validateEmail
 } from '../../constant/helper';
 
-import store from '../../redux/store/store';
+import { store } from '../../redux/store/store';
 import PasswordField from '../../components/passwordField/PasswordField';
 import EmailField from '../../components/emailField/EmailField';
+import { route } from '../../redux/actions/actions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -66,10 +68,7 @@ const Login = () => {
   const classes = useStyles();
   const { state } = useLocation();
 
-  store.dispatch({
-    type: "PREVIOUS_ROUTE",
-    previousRoute: state.previousRoute
-  })
+  store.dispatch(route(state.route));
 
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -113,9 +112,14 @@ const Login = () => {
     })
   }
 
+  useEffect(() => {
+
+    return () => store.dispatch(route("/"));
+  }, [])
+
   return (
     <div className={classes.root}>
-      <AppBar />
+      <AppBar login />
       <Grid
         container
         justify="center"

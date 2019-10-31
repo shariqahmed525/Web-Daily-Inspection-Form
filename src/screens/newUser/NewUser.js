@@ -27,11 +27,11 @@ import {
   validateEmail
 } from '../../constant/helper';
 
-import store from '../../redux/store/store';
+import { store } from '../../redux/store/store';
 import PasswordField from '../../components/passwordField/PasswordField';
 import EmailField from '../../components/emailField/EmailField';
 import Drawable from '../../components/drawable/Drawable';
-import { createUser } from '../../redux/actions/actions';
+import { createUser, route } from '../../redux/actions/actions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -73,6 +73,9 @@ const useStyles = makeStyles(theme => ({
 const NewUser = () => {
   const classes = useStyles();
   let history = useHistory();
+
+  store.dispatch(route("/newuser"));
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false)

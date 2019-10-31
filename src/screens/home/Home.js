@@ -10,6 +10,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '../../components/appBar/AppBar';
 import Drawable from '../../components/drawable/Drawable';
+import { route } from '../../redux/actions/actions';
+import { store } from '../../redux/store/store';
 
 const drawerWidth = 240;
 
@@ -45,11 +47,10 @@ const useStyles = makeStyles(theme => ({
 const Home = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  store.dispatch(route("/"));
 
   return (
-    <div
-      className={classes.root}
-    >
+    <div className={classes.root}>
       <CssBaseline />
       <AppBar
         open={open}

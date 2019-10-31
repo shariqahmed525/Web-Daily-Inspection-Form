@@ -28,28 +28,55 @@ export const isLogin = flag => {
   };
 };
 
+export const route = route => {
+  return {
+    type: "ROUTE",
+    route,
+  };
+};
+
+export const uid = uid => {
+  return {
+    type: "UID",
+    uid,
+  };
+};
+
+export const user = user => {
+  return {
+    type: "USER",
+    user,
+  };
+};
+
 // Database managements
 
 export const getAllForms = () => {
   return (dispatch) => {
-    FIRESTORE.collection("allforms")
-      .orderBy("timeStamp", "asc")
-      .onSnapshot(snap => {
-        let arr = [];
-        snap.forEach(doc => {
-          var obj = doc.data();
-          obj.id = doc.id;
-          arr.push(obj);
-        });
-        dispatch(allForm(arr));
-      });
+    const ref = FIRESTORE.collection("allforms");
+    ref.onSnapshot(snap => {
+      let arr = [];
+      snap.forEach(snapshot => {
+        const userId = snapshot.id;
+        ref.doc(userId).collection('form').onSnapshot(subSnapshot => {
+          subSnapshot.forEach(subSnap => {
+            var obj = {
+              userId,
+              ...subSnap.data(),
+              formId: subSnap.id,
+            }
+            arr.push(obj);
+          })
+          dispatch(allForm(arr));
+        })
+      })
+    })
   }
 }
 
 export const getUsers = () => {
   return (dispatch) => {
     FIRESTORE.collection("users")
-      .orderBy("timeStamp", "asc")
       .onSnapshot(snap => {
         let arr = [];
         snap.forEach(doc => {
@@ -62,6 +89,18 @@ export const getUsers = () => {
   }
 }
 
+export const getUser = uid => {
+  return (dispatch) => {
+    FIRESTORE.collection("users")
+      .doc(uid)
+      .onSnapshot(snap => {
+        var obj = snap.data();
+        obj.id = uid;
+        dispatch(user(obj));
+      });
+  }
+}
+
 export const createUser = (email, password) => {
   return () => {
     FIRESTORE.collection("users").add({
@@ -69,4 +108,12 @@ export const createUser = (email, password) => {
       password,
     })
   }
-}
+};
+
+export const updatePassword = (uid, password) => {
+  return () => {
+    FIRESTORE.collection("users").doc(uid).update({
+      password,
+    })
+  }
+};
