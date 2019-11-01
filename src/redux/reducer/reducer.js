@@ -1,4 +1,4 @@
-const reducer = (state = {}, action) => {
+const reducer = (state = { users: [], }, action) => {
   switch (action.type) {
     case "IS_LOGIN": {
       return { ...state, isLogin: action.isLogin };
@@ -14,6 +14,9 @@ const reducer = (state = {}, action) => {
     }
     case "USER": {
       return { ...state, user: action.user };
+    }
+    case "CLONE_USER": {
+      return { ...state, cloneUser: action.cloneUser };
     }
     case "ALL_FORMS": {
       return { ...state, allForm: action.allForm };

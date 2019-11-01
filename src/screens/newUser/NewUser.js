@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
   paper: {
     height: 500,
     display: 'flex',
+    padding: "0px 30px",
     textAlign: 'center',
     alignItems: 'center',
     flexDirection: 'column',
@@ -53,7 +54,8 @@ const useStyles = makeStyles(theme => ({
     width: 80,
   },
   margin: {
-    margin: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   error: {
     fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
@@ -78,9 +80,9 @@ const NewUser = () => {
 
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [cPassword, setCPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState("");
@@ -119,7 +121,7 @@ const NewUser = () => {
     setLoading(true);
     AUTH.createUserWithEmailAndPassword(email, password).then((res) => {
       history.replace('/users');
-      store.dispatch(createUser(email, password));
+      store.dispatch(createUser(res.user.uid, email, password, "user"));
     }).catch(err => {
       setLoading(false);
       if (err.code === "auth/email-already-in-use") {

@@ -58,6 +58,8 @@ const Drawable = props => {
   return (
     <SwipeableDrawer
       open={open}
+      onOpen={() => { }}
+      onClose={() => { }}
       variant="temporary"
       className={classes.drawer}
       classes={{

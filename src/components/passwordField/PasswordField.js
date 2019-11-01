@@ -18,12 +18,11 @@ import {
 
 const useStyles = makeStyles(theme => ({
   textField: {
-    width: "90%",
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
+    width: "100%",
   },
   margin: {
-    margin: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -35,12 +34,13 @@ const PasswordField = props => {
     value,
     error,
     onChange,
+    disabled,
     onEyeClick,
     showPassword,
   } = props;
 
   return (
-    <FormControl error={error !== ""} className={clsx(classes.margin, classes.textField)}>
+    <FormControl error={error !== ""} disabled={disabled} className={clsx(classes.margin, classes.textField)}>
       <InputLabel required htmlFor="standard-adornment-password">{title}</InputLabel>
       <Input
         id="standard-adornment-password"
@@ -50,8 +50,9 @@ const PasswordField = props => {
         endAdornment={
           <InputAdornment position="end">
             <IconButton
-              aria-label="toggle password visibility"
+              disabled={disabled}
               onClick={onEyeClick}
+              aria-label="toggle password visibility"
             >
               {showPassword ? <Visibility /> : <VisibilityOff />}
             </IconButton>

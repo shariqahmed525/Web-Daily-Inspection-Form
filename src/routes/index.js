@@ -11,17 +11,18 @@ import {
 import {
   createBrowserHistory
 } from "history";
+import { store } from '../redux/store/store';
 
 import Home from '../screens/home/Home';
-import { store } from '../redux/store/store';
 import Users from "../screens/users/Users";
 import Login from "../screens/login/Login";
 import NewUser from "../screens/newUser/NewUser";
+import Loading from '../components/loader/Loader';
 import ChangePassword from "../screens/changePassword/ChangePassword";
 
 import {
   getUsers,
-  getAllForms,
+  // getAllForms,
   uid,
   getUser,
 } from "../redux/actions/actions";
@@ -54,11 +55,11 @@ const Routes = () => {
       setIsLoading(false);
     });
   }, [route])
-  store.dispatch(getAllForms());
 
   const getStateFromRedux = () => {
     const { reducer } = store.getState();
     setRoute(reducer.route);
+    // store.dispatch(getAllForms());
   }
 
   return (
@@ -121,9 +122,13 @@ const PrivateRoute = ({ component: Component, login, ...rest }) => {
 };
 
 const Loader = () => (
-  <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-    Loading....
-  </p>
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <Loading
+      style={{
+        width: 150
+      }}
+    />
+  </div>
 )
 
 export default Routes;

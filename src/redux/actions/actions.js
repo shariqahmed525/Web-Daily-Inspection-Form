@@ -42,12 +42,20 @@ export const uid = uid => {
   };
 };
 
+export const cloneUser = cloneUser => {
+  return {
+    type: "CLONE_USER",
+    cloneUser,
+  };
+};
+
 export const user = user => {
   return {
     type: "USER",
     user,
   };
 };
+
 
 // Database managements
 
@@ -77,6 +85,7 @@ export const getAllForms = () => {
 export const getUsers = () => {
   return (dispatch) => {
     FIRESTORE.collection("users")
+      .where("type", "==", "user")
       .onSnapshot(snap => {
         let arr = [];
         snap.forEach(doc => {
@@ -95,17 +104,18 @@ export const getUser = uid => {
       .doc(uid)
       .onSnapshot(snap => {
         var obj = snap.data();
-        obj.id = uid;
+        obj.id = snap.id;
         dispatch(user(obj));
       });
   }
 }
 
-export const createUser = (email, password) => {
+export const createUser = (uid, email, password, type) => {
   return () => {
-    FIRESTORE.collection("users").add({
+    FIRESTORE.collection("users").doc(uid).set({
       email,
       password,
+      type
     })
   }
 };

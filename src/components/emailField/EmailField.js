@@ -7,9 +7,9 @@ import {
 
 const useStyles = makeStyles(theme => ({
   textField: {
-    width: "90%",
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
+    width: "100%",
+    // marginLeft: theme.spacing(1),
+    // marginRight: theme.spacing(1),
   },
 }));
 

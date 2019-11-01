@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
     height: 400,
     display: 'flex',
     textAlign: 'center',
+    padding: "0px 30px",
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -67,8 +68,6 @@ const useStyles = makeStyles(theme => ({
 const Login = () => {
   const classes = useStyles();
   const { state } = useLocation();
-
-  store.dispatch(route(state.route));
 
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -113,9 +112,9 @@ const Login = () => {
   }
 
   useEffect(() => {
-
+    store.dispatch(route(state.route));
     return () => store.dispatch(route("/"));
-  }, [])
+  }, [state.route])
 
   return (
     <div className={classes.root}>

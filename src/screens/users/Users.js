@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
 } from 'react'
-import './users.css';
 
 import {
   makeStyles
@@ -21,21 +20,26 @@ import {
 } from '@material-ui/core';
 
 import {
-  Edit,
   Clear,
   Search,
   Delete,
+  EditSharp,
+  Visibility,
+  VisibilityOff,
 } from '@material-ui/icons';
+
+import AppBar from '../../components/appBar/AppBar';
+import Dialog from '../../components/dialog/Dialog';
+import Drawable from '../../components/drawable/Drawable';
 
 import {
   stableSort,
   getSorting,
 } from "../../constant/functions";
-
-import AppBar from '../../components/appBar/AppBar';
-import Drawable from '../../components/drawable/Drawable';
 import { store } from '../../redux/store/store';
-import { route } from '../../redux/actions/actions';
+import { route, cloneUser, updatePassword } from '../../redux/actions/actions';
+import { AUTH } from '../../constant/firebase';
+import Loader from '../../components/loader/Loader';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -48,7 +52,7 @@ const useStyles = makeStyles(theme => ({
     flex: 1,
     height: '100vh',
     display: 'flex',
-    padding: "0px 10px",
+    padding: "50px 10px 10px 10px",
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -71,20 +75,30 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "row",
   },
+  password: {
+    fontSize: 18,
+    fontWeight: "bold",
+  }
 }));
 
 const Users = () => {
   const classes = useStyles();
+
   const [page, setPage] = useState(0);
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState([]);
+  const [viewPass, setViewPass] = useState([]);
+  const [newPassword, setNewPassword] = useState("");
   const [searchTxt, setSearchTxt] = useState("");
-  const [isLoading, setIsLoading] = useState("  ");
+  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [showPassword, setShowPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [isShowSearchBar, setIsShowSearchBar] = useState(false);
-
-  store.dispatch(route("/users"));
 
   const handleChangePage = (_, page) => {
     setPage(page);
@@ -97,7 +111,7 @@ const Users = () => {
   const searchItems = e => {
     const searchTxt = e.target.value;
     const result = users.filter(item => {
-      const lowerItem = item.title.toString().toLowerCase();
+      const lowerItem = item.email.toString().toLowerCase();
       const lowerText = searchTxt.toLowerCase();
       return lowerItem.indexOf(lowerText) !== -1;
     });
@@ -106,16 +120,88 @@ const Users = () => {
   };
 
   useEffect(() => {
+    const { reducer } = store.getState();
+    const { user } = reducer;
+    store.dispatch(cloneUser(user));
+    store.dispatch(route("/users"));
     getStateFromStore();
     store.subscribe(getStateFromStore);
   }, [])
 
   const getStateFromStore = () => {
     const { reducer } = store.getState();
-    // console.log(reducer);
+    const { users } = reducer;
+    setUsers(users);
+    setIsLoading(false);
   }
 
-  const _edit = () => { }
+  const _viewPass = (id) => {
+    const index = viewPass.indexOf(id);
+    if (index !== -1) {
+      viewPass.splice(index, 1);
+    }
+    else {
+      viewPass.push(id);
+    }
+    setViewPass([...viewPass]);
+  }
+
+  const _edit = (user) => {
+    setOpenDialog(true);
+    setSelectedUser(user);
+  }
+
+  const _changePass = async () => {
+    const { reducer } = store.getState();
+    const { cloneUser } = reducer;
+    const { email, password, id } = selectedUser;
+
+    if (!password.trim()) {
+      setPasswordError("Please enter password.");
+      return;
+    }
+    if (password.trim().length < 6) {
+      setPasswordError("Password must be greater than 5 characters.");
+      return;
+    }
+    setLoading(true);
+
+    try {
+
+      /* sign in for selected user */
+      const { user } = await AUTH.signInWithEmailAndPassword(email, password);
+
+      try {
+
+        /* selected user change password */
+        await user.updatePassword(newPassword)
+
+        /* update selected user password in database */
+        store.dispatch(updatePassword(id, newPassword));
+
+        try {
+
+          /* admin sign in */
+          await AUTH.signInWithEmailAndPassword(cloneUser.email, cloneUser.password);
+          setLoading(false);
+          setOpenDialog(false);
+
+        } catch (error) {
+          setLoading(false);
+          console.log(error, " error in admin sign in after change user password");
+        }
+
+      } catch (error) {
+        setLoading(false);
+        console.log(error, " error in change user password");
+      }
+
+    } catch (error) {
+      setLoading(false);
+      console.log(error, " error in change user password login");
+    }
+  }
+
   const _delete = () => { }
 
   const items = searchTxt ? result : users;
@@ -130,6 +216,24 @@ const Users = () => {
         open={open}
         onClick={() => setOpen(false)}
       />
+
+      <Dialog
+        open={openDialog}
+        btnText={"Change"}
+        loading={loading}
+        onClick={_changePass}
+        password={newPassword}
+        showPassword={showPassword}
+        onChange={({ target }) => {
+          setPasswordError("");
+          setNewPassword(target.value);
+        }}
+        passwordError={passwordError}
+        onClose={() => setOpenDialog(false)}
+        title={`Are sure to change ${selectedUser.email} passowrd?`}
+        onEyeClick={() => setShowPassword(!showPassword)}
+      />
+
       <Paper className={classes.paper}>
         <div className={classes.searchBarContainer}>
           <div className={classes.searchBarWrapper}>
@@ -160,6 +264,7 @@ const Users = () => {
             )}
             <Tooltip title="Search">
               <IconButton
+                disabled={isLoading}
                 aria-label="Search"
                 onClick={() => setIsShowSearchBar(!isShowSearchBar)}
               >
@@ -168,13 +273,14 @@ const Users = () => {
             </Tooltip>
           </div>
         </div>
-        <div className={classes.tableWrapper}>
+        <div className={classes.tableWrapper} onClick={() => setIsShowSearchBar(false)}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <TableHead>
               <TableRow>
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Password</TableCell>
-                <TableCell align="center">Edit</TableCell>
+                <TableCell align="center">View</TableCell>
+                <TableCell align="center">Change Password</TableCell>
                 <TableCell align="center">Remove</TableCell>
               </TableRow>
             </TableHead>
@@ -184,8 +290,8 @@ const Users = () => {
                   <TableRow>
                     <TableCell colSpan={5} align="center">
                       <p style={{ color: "red", marginTop: 10 }}>
-                        No Books Found
-                        </p>
+                        No User Found
+                      </p>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -201,15 +307,30 @@ const Users = () => {
                               {value.email}
                             </TableCell>
                             <TableCell align="center">
-                              {value.password}
+                              {viewPass.includes(value.id) ? (
+                                value.password
+                              ) : (
+                                  <span className={classes.password}>
+                                    {new Array(value.password.length).join(".")}
+                                  </span>
+                                )}
                             </TableCell>
                             <TableCell align="center">
                               <IconButton
                                 aria-label="Update"
                                 color="primary"
-                                onClick={() => _edit()}
+                                onClick={() => _viewPass(value.id)}
                               >
-                                <Edit />
+                                {viewPass.includes(value.id) ? <Visibility /> : <VisibilityOff />}
+                              </IconButton>
+                            </TableCell>
+                            <TableCell align="center">
+                              <IconButton
+                                aria-label="Update"
+                                color="primary"
+                                onClick={() => _edit(value)}
+                              >
+                                <EditSharp />
                               </IconButton>
                             </TableCell>
                             <TableCell align="center">
@@ -228,7 +349,12 @@ const Users = () => {
               ) : (
                   <TableRow>
                     <TableCell colSpan={5} align="center">
-                      <p style={{ marginTop: 10 }}>loading...</p>
+                      <Loader
+                        style={{
+                          width: 50,
+                          margin: "0px auto"
+                        }}
+                      />
                     </TableCell>
                   </TableRow>
                 )}
