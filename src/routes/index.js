@@ -16,8 +16,10 @@ import { store } from '../redux/store/store';
 import Home from '../screens/home/Home';
 import Users from "../screens/users/Users";
 import Login from "../screens/login/Login";
+import Admins from "../screens/admins/Admins";
 import NewUser from "../screens/newUser/NewUser";
 import Loading from '../components/loader/Loader';
+import NewAdmin from "../screens/newAdmin/NewAdmin";
 import ChangePassword from "../screens/changePassword/ChangePassword";
 
 import {
@@ -82,6 +84,18 @@ const Routes = () => {
           path="/users"
           login={isLogin}
           component={Users}
+        />
+        <PrivateRoute
+          exact
+          login={isLogin}
+          path="/newadmin"
+          component={NewAdmin}
+        />
+        <PrivateRoute
+          exact
+          path="/admins"
+          login={isLogin}
+          component={Admins}
         />
         <PrivateRoute
           exact

@@ -6,6 +6,7 @@ import {
   People,
   ExitToApp,
   PersonAdd,
+  SupervisorAccount,
 } from '@material-ui/icons';
 import Axios from 'axios';
 
@@ -24,6 +25,16 @@ export const drawableItems = [
     text: "Users",
     icon: <People />,
     route: '/users'
+  },
+  {
+    text: "New Admin",
+    icon: <PersonAdd />,
+    route: '/newadmin'
+  },
+  {
+    text: "Admins",
+    icon: <SupervisorAccount />,
+    route: '/admins'
   },
 ];
 

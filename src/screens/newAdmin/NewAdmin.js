@@ -1,6 +1,5 @@
 import React, {
-  useState,
-  useEffect
+  useState
 } from 'react';
 import {
   useHistory
@@ -17,7 +16,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import {
-  VpnKey,
+  PersonAdd,
 } from '@material-ui/icons';
 import {
   AUTH
@@ -25,12 +24,15 @@ import {
 import {
   makeStyles
 } from '@material-ui/core/styles';
-
+import {
+  validateEmail
+} from '../../constant/helper';
 
 import { store } from '../../redux/store/store';
 import PasswordField from '../../components/passwordField/PasswordField';
+import EmailField from '../../components/emailField/EmailField';
 import Drawable from '../../components/drawable/Drawable';
-import { route, updatePassword } from '../../redux/actions/actions.js';
+import { createUser, route } from '../../redux/actions/actions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,17 +42,18 @@ const useStyles = makeStyles(theme => ({
     padding: "40px 10px 10px 10px",
   },
   paper: {
-    height: 410,
+    height: 500,
     display: 'flex',
-    textAlign: 'center',
     padding: "0px 30px",
+    textAlign: 'center',
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
     color: theme.palette.text.secondary,
   },
   margin: {
-    margin: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   error: {
     fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
@@ -67,23 +70,32 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ChangePassword = () => {
+const NewAdmin = () => {
   const classes = useStyles();
   let history = useHistory();
 
-  const [uid, setUid] = useState("")
+  store.dispatch(route("/newuser"));
+
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [cPassword, setCPassword] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [cPasswordError, setCPasswordError] = useState("");
 
-  const validate = async () => {
+  const validate = () => {
+    if (!email.trim()) {
+      setEmailError("Please enter email.");
+      return;
+    }
+    if (!validateEmail(email)) {
+      setEmailError("Invalid email.");
+      return;
+    }
     if (!password.trim()) {
       setPasswordError("Please enter password.");
       return;
@@ -93,7 +105,7 @@ const ChangePassword = () => {
       return;
     }
     if (!cPassword.trim()) {
-      setCPasswordError("Please enter password.");
+      setCPasswordError("Please enter confirm password.");
       return;
     }
     if (cPassword.trim().length < 6) {
@@ -101,35 +113,21 @@ const ChangePassword = () => {
       return;
     }
     if (password.trim() !== cPassword.trim()) {
-      setError("Password do not match");
+      setCPasswordError("Password do not match");
       return;
     }
     setLoading(true);
-    try {
-      const { user } = await AUTH.signInWithEmailAndPassword(userEmail, userPassword);
-      try {
-        await user.updatePassword(password)
-        store.dispatch(updatePassword(uid, password));
-        history.push('/');
-      } catch (err) {
-        setLoading(false);
-        console.log(err, " error in change admin password");
-      }
-    } catch (error) {
+    AUTH.createUserWithEmailAndPassword(email, password).then((res) => {
+      history.replace('/users');
+      store.dispatch(createUser(res.user.uid, email, password, "user"));
+    }).catch(err => {
       setLoading(false);
-      console.log(error, " error in change password login");
-    }
+      if (err.code === "auth/email-already-in-use") {
+        setError(err.message);
+      }
+      console.log(err, " error in new user");
+    })
   }
-
-  useEffect(() => {
-    const { reducer } = store.getState();
-    const { user, uid } = reducer;
-    setUid(uid);
-    setUserEmail(user.email);
-    setUserPassword(user.password);
-    store.dispatch(route("/changepassword"));
-    return () => store.dispatch(route("/"));
-  }, [])
 
   return (
     <div className={classes.root}>
@@ -148,16 +146,24 @@ const ChangePassword = () => {
       >
         <Grid item xs={12} sm={12} md={6}>
           <Paper className={classes.paper}>
-
             <Typography variant="h4" color="secondary" style={{
               textAlign: 'center',
               marginTop: "0.35em",
             }}>
-              Change Password
+              Create New Admin
             </Typography>
 
+            <EmailField
+              value={email}
+              error={emailError}
+              onChange={({ target }) => {
+                setEmailError("");
+                setEmail(target.value);
+              }}
+            />
+
             <PasswordField
-              title="New Password"
+              title="Password"
               value={password}
               error={passwordError}
               showPassword={showPassword}
@@ -191,12 +197,12 @@ const ChangePassword = () => {
               ) : (
                   <ColorButton
                     color="primary"
-                    endIcon={<VpnKey />}
+                    endIcon={<PersonAdd />}
                     variant="contained"
                     className={classes.margin}
                     onClick={() => validate()}
                   >
-                    Change Password
+                    Create
                 </ColorButton>
                 )}
             </div>
@@ -207,4 +213,4 @@ const ChangePassword = () => {
   );
 };
 
-export default ChangePassword;
+export default NewAdmin;

@@ -13,6 +13,7 @@ import ColorButton from '../../components/button/Button';
 import {
   Paper,
   Grid,
+  Typography,
 } from '@material-ui/core';
 import {
   PersonAdd,
@@ -148,12 +149,17 @@ const NewUser = () => {
       >
         <Grid item xs={12} sm={12} md={6}>
           <Paper className={classes.paper}>
-            <img
+            {/* <img
               alt="Not found!"
               className={classes.logo}
               src={require('../../images/add-user.png')}
-            />
-
+            /> */}
+            <Typography variant="h4" color="secondary" style={{
+              textAlign: 'center',
+              marginTop: "0.35em",
+            }}>
+              Create New User
+          </Typography>
             <EmailField
               value={email}
               error={emailError}

@@ -86,7 +86,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Users = () => {
+const Admins = () => {
   const classes = useStyles();
 
   const [page, setPage] = useState(0);
@@ -259,7 +259,7 @@ const Users = () => {
             textAlign: 'center',
             marginTop: "0.35em",
           }}>
-            Users
+            Admins
           </Typography>
         </div>
         <div className={classes.searchBarContainer}>
@@ -416,4 +416,4 @@ const Users = () => {
   )
 }
 
-export default Users;
+export default Admins;
