@@ -23,10 +23,10 @@ import {
 import {
   Clear,
   Search,
-  Delete,
-  EditSharp,
-  Visibility,
-  VisibilityOff,
+  // Delete,
+  // EditSharp,
+  // Visibility,
+  // VisibilityOff,
 } from '@material-ui/icons';
 
 import AppBar from '../../components/appBar/AppBar';
@@ -41,10 +41,10 @@ import { store } from '../../redux/store/store';
 import { route, cloneUser, updatePassword } from '../../redux/actions/actions';
 import { AUTH } from '../../constant/firebase';
 import Loader from '../../components/loader/Loader';
-import {
-  axios,
-  DELETE_USER,
-} from '../../constant/helper';
+// import {
+//   axios,
+//   DELETE_USER,
+// } from '../../constant/helper';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -90,17 +90,19 @@ const Admins = () => {
   const classes = useStyles();
 
   const [page, setPage] = useState(0);
-  const [users, setUsers] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState([]);
-  const [viewPass, setViewPass] = useState([]);
+  // const [viewPass, setViewPass] = useState([]);
   const [newPassword, setNewPassword] = useState("");
   const [searchTxt, setSearchTxt] = useState("");
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUser,
+    // setSelectedUser
+  ] = useState("");
   const [showPassword, setShowPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isShowSearchBar, setIsShowSearchBar] = useState(false);
@@ -115,7 +117,7 @@ const Admins = () => {
 
   const searchItems = e => {
     const searchTxt = e.target.value;
-    const result = users.filter(item => {
+    const result = admins.filter(item => {
       const lowerItem = item.email.toString().toLowerCase();
       const lowerText = searchTxt.toLowerCase();
       return lowerItem.indexOf(lowerText) !== -1;
@@ -128,33 +130,33 @@ const Admins = () => {
     const { reducer } = store.getState();
     const { user } = reducer;
     store.dispatch(cloneUser(user));
-    store.dispatch(route("/users"));
+    store.dispatch(route("/admins"));
     getStateFromStore();
     store.subscribe(getStateFromStore);
   }, [])
 
   const getStateFromStore = () => {
     const { reducer } = store.getState();
-    const { users } = reducer;
-    setUsers(users);
+    const { admins } = reducer;
+    setAdmins(admins);
     setIsLoading(false);
   }
 
-  const _viewPass = (id) => {
-    const index = viewPass.indexOf(id);
-    if (index !== -1) {
-      viewPass.splice(index, 1);
-    }
-    else {
-      viewPass.push(id);
-    }
-    setViewPass([...viewPass]);
-  }
+  // const _viewPass = (id) => {
+  //   const index = viewPass.indexOf(id);
+  //   if (index !== -1) {
+  //     viewPass.splice(index, 1);
+  //   }
+  //   else {
+  //     viewPass.push(id);
+  //   }
+  //   setViewPass([...viewPass]);
+  // }
 
-  const _edit = (user) => {
-    setOpenDialog(true);
-    setSelectedUser(user);
-  }
+  // const _edit = (user) => {
+  //   setOpenDialog(true);
+  //   setSelectedUser(user);
+  // }
 
   const _changePass = async () => {
     const { reducer } = store.getState();
@@ -207,23 +209,23 @@ const Admins = () => {
     }
   }
 
-  const _delete = async (uid) => {
-    const obj = {
-      userId: uid,
-      collectionName: "users",
-    };
+  // const _delete = async (uid) => {
+  //   const obj = {
+  //     userId: uid,
+  //     collectionName: "admins",
+  //   };
 
-    try {
-      const { data } = await axios.post(DELETE_USER, {}, {
-        params: obj
-      })
-      console.log(data);
-    } catch (error) {
-      console.log(error, " error in delete user");
-    }
-  }
+  //   try {
+  //     const { data } = await axios.post(DELETE_USER, {}, {
+  //       params: obj
+  //     })
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.log(error, " error in delete user");
+  //   }
+  // }
 
-  const items = searchTxt ? result : users;
+  const items = searchTxt ? result : admins;
 
   return (
     <div className={classes.root}>
@@ -267,7 +269,7 @@ const Admins = () => {
             {isShowSearchBar && (
               <TextField
                 id="standard-search"
-                label="Search field"
+                label="Search Admins"
                 type="text"
                 margin="normal"
                 style={{
@@ -307,9 +309,9 @@ const Admins = () => {
               <TableRow>
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Password</TableCell>
-                <TableCell align="center">View</TableCell>
+                {/* <TableCell align="center">View</TableCell>
                 <TableCell align="center">Change Password</TableCell>
-                <TableCell align="center">Remove</TableCell>
+                <TableCell align="center">Remove</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -335,15 +337,18 @@ const Admins = () => {
                               {value.email}
                             </TableCell>
                             <TableCell align="center">
-                              {viewPass.includes(value.id) ? (
+                              {/* {viewPass.includes(value.id) ? (
                                 value.password
                               ) : (
                                   <span className={classes.password}>
                                     {new Array(value.password.length).join(".")}
                                   </span>
-                                )}
+                                )} */}
+                              <span className={classes.password}>
+                                {new Array(value.password.length).join(".")}
+                              </span>
                             </TableCell>
-                            <TableCell align="center">
+                            {/* <TableCell align="center">
                               <IconButton
                                 aria-label="Update"
                                 color="primary"
@@ -370,6 +375,7 @@ const Admins = () => {
                                 <Delete />
                               </IconButton>
                             </TableCell>
+                           */}
                           </TableRow>
                         );
                       })

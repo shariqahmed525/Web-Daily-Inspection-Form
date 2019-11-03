@@ -30,6 +30,7 @@ const PasswordField = props => {
 
   const classes = useStyles();
   const {
+    id,
     title,
     value,
     error,
@@ -41,9 +42,9 @@ const PasswordField = props => {
 
   return (
     <FormControl error={error !== ""} disabled={disabled} className={clsx(classes.margin, classes.textField)}>
-      <InputLabel required htmlFor="standard-adornment-password">{title}</InputLabel>
+      <InputLabel required htmlFor={id}>{title}</InputLabel>
       <Input
-        id="standard-adornment-password"
+        id={id}
         type={showPassword ? 'text' : 'password'}
         value={value}
         onChange={onChange}

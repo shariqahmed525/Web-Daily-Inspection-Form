@@ -12,6 +12,9 @@ const reducer = (state = { users: [], }, action) => {
     case "USERS": {
       return { ...state, users: action.users };
     }
+    case "ADMINS": {
+      return { ...state, admins: action.admins };
+    }
     case "USER": {
       return { ...state, user: action.user };
     }

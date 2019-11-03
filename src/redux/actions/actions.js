@@ -14,10 +14,18 @@ export const allForm = allForm => {
   };
 };
 
+
 export const users = users => {
   return {
     type: "USERS",
     users
+  };
+};
+
+export const admins = admins => {
+  return {
+    type: "ADMINS",
+    admins
   };
 };
 
@@ -90,7 +98,7 @@ export const getUsers = () => {
         let arr = [];
         snap.forEach(doc => {
           var obj = doc.data();
-          obj.id = doc.id;
+          obj.id = doc && doc.id;
           arr.push(obj);
         });
         dispatch(users(arr));
@@ -104,8 +112,24 @@ export const getUser = uid => {
       .doc(uid)
       .onSnapshot(snap => {
         var obj = snap.data();
-        obj.id = snap.id;
+        obj.id = snap && snap.id;
         dispatch(user(obj));
+      });
+  }
+}
+
+export const getAdmins = () => {
+  return (dispatch) => {
+    FIRESTORE.collection("users")
+      .where("type", "==", "admin")
+      .onSnapshot(snap => {
+        let arr = [];
+        snap.forEach(doc => {
+          var obj = doc.data();
+          obj.id = doc && doc.id;
+          arr.push(obj);
+        });
+        dispatch(admins(arr));
       });
   }
 }

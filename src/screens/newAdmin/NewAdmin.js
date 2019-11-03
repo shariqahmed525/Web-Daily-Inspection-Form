@@ -88,11 +88,12 @@ const NewAdmin = () => {
   const [cPasswordError, setCPasswordError] = useState("");
 
   const validate = () => {
-    if (!email.trim()) {
+    const toLowerEmail = email.toLowerCase();
+    if (!toLowerEmail.trim()) {
       setEmailError("Please enter email.");
       return;
     }
-    if (!validateEmail(email)) {
+    if (!validateEmail(toLowerEmail)) {
       setEmailError("Invalid email.");
       return;
     }
@@ -117,15 +118,15 @@ const NewAdmin = () => {
       return;
     }
     setLoading(true);
-    AUTH.createUserWithEmailAndPassword(email, password).then((res) => {
-      history.replace('/users');
-      store.dispatch(createUser(res.user.uid, email, password, "user"));
+    AUTH.createUserWithEmailAndPassword(toLowerEmail, password).then((res) => {
+      history.replace('/admins');
+      store.dispatch(createUser(res.user.uid, toLowerEmail, password, "admin"));
     }).catch(err => {
       setLoading(false);
       if (err.code === "auth/email-already-in-use") {
         setError(err.message);
       }
-      console.log(err, " error in new user");
+      console.log(err, " error in new admin");
     })
   }
 

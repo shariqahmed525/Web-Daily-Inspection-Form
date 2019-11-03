@@ -91,11 +91,12 @@ const NewUser = () => {
   const [cPasswordError, setCPasswordError] = useState("");
 
   const validate = () => {
-    if (!email.trim()) {
+    const toLowerEmail = email.toLowerCase();
+    if (!toLowerEmail.trim()) {
       setEmailError("Please enter email.");
       return;
     }
-    if (!validateEmail(email)) {
+    if (!validateEmail(toLowerEmail)) {
       setEmailError("Invalid email.");
       return;
     }
@@ -120,9 +121,9 @@ const NewUser = () => {
       return;
     }
     setLoading(true);
-    AUTH.createUserWithEmailAndPassword(email, password).then((res) => {
+    AUTH.createUserWithEmailAndPassword(toLowerEmail, password).then((res) => {
       history.replace('/users');
-      store.dispatch(createUser(res.user.uid, email, password, "user"));
+      store.dispatch(createUser(res.user.uid, toLowerEmail, password, "user"));
     }).catch(err => {
       setLoading(false);
       if (err.code === "auth/email-already-in-use") {
@@ -170,6 +171,7 @@ const NewUser = () => {
             />
 
             <PasswordField
+              id="pass"
               title="Password"
               value={password}
               error={passwordError}
@@ -182,9 +184,10 @@ const NewUser = () => {
             />
 
             <PasswordField
-              title="Confirm Password"
+              id="cpass"
               value={cPassword}
               error={cPasswordError}
+              title="Confirm Password"
               showPassword={showPassword}
               onChange={({ target }) => {
                 setCPasswordError("");

@@ -27,6 +27,7 @@ import {
   // getAllForms,
   uid,
   getUser,
+  getAdmins,
 } from "../redux/actions/actions";
 import {
   AUTH
@@ -49,6 +50,7 @@ const Routes = () => {
           history.push(route) :
           history.push("/");
         store.dispatch(getUsers());
+        store.dispatch(getAdmins());
         store.dispatch(uid(user.uid));
         store.dispatch(getUser(user.uid));
       } else {

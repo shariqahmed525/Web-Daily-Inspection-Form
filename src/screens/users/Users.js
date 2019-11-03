@@ -267,7 +267,7 @@ const Users = () => {
             {isShowSearchBar && (
               <TextField
                 id="standard-search"
-                label="Search field"
+                label="Search Users"
                 type="text"
                 margin="normal"
                 style={{
