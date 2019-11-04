@@ -7,6 +7,7 @@ import {
   ExitToApp,
   PersonAdd,
 } from '@material-ui/icons';
+import Axios from 'axios';
 
 export const drawableItems = [
   {
@@ -44,3 +45,11 @@ export const validateEmail = (email) => {
   var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
 }
+
+export const FIREBASE_URL = "https://us-central1-inspectionform-364ca.cloudfunctions.net";
+export const DELETE_USER = "/deleteUserFromAuthentications";
+
+export const axios = Axios.create({
+  // baseURL: "http://localhost:5001/inspectionform-364ca/us-central1",
+  baseURL: FIREBASE_URL,
+});

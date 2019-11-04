@@ -40,6 +40,7 @@ import { store } from '../../redux/store/store';
 import { route, cloneUser, updatePassword } from '../../redux/actions/actions';
 import { AUTH } from '../../constant/firebase';
 import Loader from '../../components/loader/Loader';
+import { DELETE_USER, axios, FIREBASE_URL } from '../../constant/helper';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -202,7 +203,23 @@ const Users = () => {
     }
   }
 
-  const _delete = () => { }
+  const _delete = async (uid) => {
+    const obj = JSON.stringify({
+      userId: uid,
+      collectionName: "users",
+    });
+
+    try {
+      const request = await fetch(`${FIREBASE_URL}${DELETE_USER}`, {
+        method: "POST",
+        body: obj
+      })
+      const res = await request.json();
+      console.log(res, " response");
+    } catch (error) {
+      console.log(error, " error in delete user");
+    }
+  }
 
   const items = searchTxt ? result : users;
 
@@ -337,7 +354,7 @@ const Users = () => {
                               <IconButton
                                 aria-label="Delete"
                                 color="secondary"
-                                onClick={() => _delete()}
+                                onClick={() => _delete(value.id)}
                               >
                                 <Delete />
                               </IconButton>
