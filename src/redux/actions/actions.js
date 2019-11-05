@@ -90,8 +90,10 @@ export const getUsers = () => {
       .onSnapshot(snap => {
         let arr = [];
         snap.forEach(doc => {
-          var obj = doc.data();
-          obj.id = doc && doc.id;
+          var obj = {
+            ...doc.data(),
+            id: doc && doc.id
+          }
           arr.push(obj);
         });
         dispatch(users(arr));
@@ -104,8 +106,10 @@ export const getUser = uid => {
     FIRESTORE.collection("users")
       .doc(uid)
       .onSnapshot(snap => {
-        var obj = snap.data();
-        obj.id = snap && snap.id;
+        var obj = {
+          ...snap.data(),
+          id: snap && snap.id
+        };
         dispatch(user(obj));
       });
   }
@@ -118,8 +122,10 @@ export const getAdmins = () => {
       .onSnapshot(snap => {
         let arr = [];
         snap.forEach(doc => {
-          var obj = doc.data();
-          obj.id = doc && doc.id;
+          var obj = {
+            ...doc.data(),
+            id: doc && doc.id
+          };
           arr.push(obj);
         });
         dispatch(admins(arr));

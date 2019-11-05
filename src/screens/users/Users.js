@@ -15,7 +15,6 @@ import {
   TextField,
   IconButton,
   TablePagination,
-  Paper,
   TableBody,
   Typography,
 } from '@material-ui/core';
@@ -41,7 +40,6 @@ import { store } from '../../redux/store/store';
 import { route } from '../../redux/actions/actions';
 import Loader from '../../components/loader/Loader';
 import {
-  axios,
   DELETE_USER,
   UPDATE_PASSWORD,
   FIREBASE_URL,
@@ -85,7 +83,16 @@ const useStyles = makeStyles(theme => ({
   password: {
     fontSize: 18,
     fontWeight: "bold",
-  }
+  },
+  loaderWrapper: {
+    flex: 1,
+    zIndex: 1,
+    width: "90%",
+    display: 'flex',
+    position: "absolute",
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 }));
 
 const Users = () => {
@@ -96,11 +103,12 @@ const Users = () => {
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState([]);
   const [viewPass, setViewPass] = useState([]);
-  const [newPassword, setNewPassword] = useState("");
   const [searchTxt, setSearchTxt] = useState("");
   const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [newPassword, setNewPassword] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [showPassword, setShowPassword] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
@@ -183,17 +191,14 @@ const Users = () => {
   }
 
   const _delete = async (uid) => {
-    const obj = {
-      userId: uid,
-      collectionName: "users",
-    };
-
     try {
-      const { data } = await axios.post(DELETE_USER, {}, {
-        params: obj
+      setDisabled(true);
+      await fetch(`${FIREBASE_URL}${DELETE_USER}?userId=${uid}&collectionName=users`, {
+        mode: "no-cors",
       })
-      console.log(data);
+      setDisabled(false);
     } catch (error) {
+      setDisabled(false);
       console.log(error, " error in delete user");
     }
   }
@@ -227,8 +232,17 @@ const Users = () => {
         title={`Are sure to change ${selectedUser && selectedUser.email} passowrd?`}
         onEyeClick={() => setShowPassword(!showPassword)}
       />
+      {disabled && (
+        <div className={classes.loaderWrapper}>
+          <Loader
+            style={{
+              width: 150,
+            }}
+          />
+        </div>
+      )}
+      <div className={classes.paper} style={{ backgroundColor: disabled ? "#c8c8c8" : "#fff" }}>
 
-      <Paper className={classes.paper}>
         <div onClick={() => setIsShowSearchBar(false)}>
           <Typography variant="h4" color="secondary" style={{
             textAlign: 'center',
@@ -320,8 +334,9 @@ const Users = () => {
                             </TableCell>
                             <TableCell align="center">
                               <IconButton
-                                aria-label="Update"
                                 color="primary"
+                                disabled={disabled}
+                                aria-label="Update"
                                 onClick={() => _viewPass(value.id)}
                               >
                                 {viewPass.includes(value.id) ? <Visibility /> : <VisibilityOff />}
@@ -329,6 +344,7 @@ const Users = () => {
                             </TableCell>
                             <TableCell align="center">
                               <IconButton
+                                disabled={disabled}
                                 aria-label="Update"
                                 color="primary"
                                 onClick={() => _edit(value)}
@@ -338,6 +354,7 @@ const Users = () => {
                             </TableCell>
                             <TableCell align="center">
                               <IconButton
+                                disabled={disabled}
                                 aria-label="Delete"
                                 color="secondary"
                                 onClick={() => _delete(value.id)}
@@ -386,7 +403,7 @@ const Users = () => {
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
-      </Paper>
+      </div>
     </div>
   )
 }

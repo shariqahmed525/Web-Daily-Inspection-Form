@@ -121,7 +121,7 @@ const NewAdmin = () => {
     }
     setLoading(true);
     AUTH.createUserWithEmailAndPassword(toLowerEmail, password).then((res) => {
-      history.replace('/admins');
+      history.push('/admins');
       store.dispatch(createUser(res.user.uid, toLowerEmail, password, "admin"));
     }).catch(err => {
       setLoading(false);

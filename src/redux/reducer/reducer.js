@@ -1,4 +1,4 @@
-const reducer = (state = { users: [], }, action) => {
+const reducer = (state = { users: [], admins: [] }, action) => {
   switch (action.type) {
     case "IS_LOGIN": {
       return { ...state, isLogin: action.isLogin };

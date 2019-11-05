@@ -1,7 +1,10 @@
 import React, {
   useState,
+  useEffect,
 } from 'react';
-
+import {
+  useHistory
+} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '../../components/appBar/AppBar';
 import Drawable from '../../components/drawable/Drawable';
@@ -32,8 +35,24 @@ const useStyles = makeStyles(() => ({
 
 const Home = () => {
   const classes = useStyles();
+  let history = useHistory();
+
   const [open, setOpen] = useState(false);
-  store.dispatch(route("/"));
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalAdmins, setTotalAdmins] = useState(0);
+
+  useEffect(() => {
+    getStateFromStore();
+    store.dispatch(route("/"));
+    store.subscribe(getStateFromStore);
+  }, [])
+
+  const getStateFromStore = () => {
+    const { reducer } = store.getState();
+    let { admins, users } = reducer;
+    setTotalUsers(users ? users.length ? users.length : 0 : 0);
+    setTotalAdmins(admins ? admins.length ? admins.length : 0 : 0);
+  }
 
   return (
     <div className={classes.root}>
@@ -47,8 +66,8 @@ const Home = () => {
         onClick={() => setOpen(false)}
       />
       <div className={classes.paper}>
-        <AppCard name="USERS" value="87" onClick={() => { alert("OK") }} />
-        <AppCard name="ADMINS" value="20" onClick={() => { alert("OK") }} />
+        <AppCard name="USERS" value={totalUsers} onClick={() => history.push('/users')} />
+        <AppCard name="ADMINS" value={totalAdmins} onClick={() => history.push('/admins')} />
       </div>
     </div>
   );

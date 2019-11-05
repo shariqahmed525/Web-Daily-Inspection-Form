@@ -124,7 +124,10 @@ const NewUser = () => {
     }
     setLoading(true);
     AUTH.createUserWithEmailAndPassword(toLowerEmail, password).then((res) => {
-      history.replace('/users');
+      setEmail("");
+      setPassword("");
+      setCPassword("");
+      history.push('/users');
       store.dispatch(createUser(res.user.uid, toLowerEmail, password, "user"));
     }).catch(err => {
       setLoading(false);
