@@ -50,13 +50,6 @@ export const uid = uid => {
   };
 };
 
-export const cloneUser = cloneUser => {
-  return {
-    type: "CLONE_USER",
-    cloneUser,
-  };
-};
-
 export const user = user => {
   return {
     type: "USER",

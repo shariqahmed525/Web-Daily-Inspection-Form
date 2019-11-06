@@ -38,12 +38,13 @@ import {
   getSorting,
 } from "../../constant/functions";
 import { store } from '../../redux/store/store';
-import { route, cloneUser, updatePassword } from '../../redux/actions/actions';
-import { AUTH } from '../../constant/firebase';
+import { route } from '../../redux/actions/actions';
 import Loader from '../../components/loader/Loader';
 import {
   axios,
   DELETE_USER,
+  UPDATE_PASSWORD,
+  FIREBASE_URL,
 } from '../../constant/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -52,14 +53,15 @@ const useStyles = makeStyles(theme => ({
     overflowX: "auto",
     padding: "10px 20px",
     color: theme.palette.text.secondary,
+    boxShadow: "rgba(0,0,0,0.2) 5px 5px 5px",
   },
   root: {
     flex: 1,
-    height: '100vh',
     display: 'flex',
-    padding: "50px 10px 10px 10px",
+    minHeight: '100vh',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: "0px 10px 0px 10px",
   },
   tableWrapper: {
     overflowX: "auto"
@@ -100,8 +102,8 @@ const Users = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState("");
   const [showPassword, setShowPassword] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
   const [passwordError, setPasswordError] = useState("");
   const [isShowSearchBar, setIsShowSearchBar] = useState(false);
 
@@ -125,9 +127,6 @@ const Users = () => {
   };
 
   useEffect(() => {
-    const { reducer } = store.getState();
-    const { user } = reducer;
-    store.dispatch(cloneUser(user));
     store.dispatch(route("/users"));
     getStateFromStore();
     store.subscribe(getStateFromStore);
@@ -157,53 +156,29 @@ const Users = () => {
   }
 
   const _changePass = async () => {
-    const { reducer } = store.getState();
-    const { cloneUser } = reducer;
-    const { email, password, id } = selectedUser;
+    const { id } = selectedUser;
 
-    if (!password.trim()) {
+    if (!newPassword.trim()) {
       setPasswordError("Please enter password.");
       return;
     }
-    if (password.trim().length < 6) {
+    if (newPassword.trim().length < 6) {
       setPasswordError("Password must be greater than 5 characters.");
       return;
     }
     setLoading(true);
 
     try {
-
-      /* sign in for selected user */
-      const { user } = await AUTH.signInWithEmailAndPassword(email, password);
-
-      try {
-
-        /* selected user change password */
-        await user.updatePassword(newPassword)
-
-        /* update selected user password in database */
-        store.dispatch(updatePassword(id, newPassword));
-
-        try {
-
-          /* admin sign in */
-          await AUTH.signInWithEmailAndPassword(cloneUser.email, cloneUser.password);
-          setLoading(false);
-          setOpenDialog(false);
-
-        } catch (error) {
-          setLoading(false);
-          console.log(error, " error in admin sign in after change user password");
-        }
-
-      } catch (error) {
-        setLoading(false);
-        console.log(error, " error in change user password");
-      }
-
-    } catch (error) {
+      await fetch(`${FIREBASE_URL}${UPDATE_PASSWORD}?userId=${id}&newPassword=${newPassword}`, {
+        mode: "no-cors",
+      })
       setLoading(false);
-      console.log(error, " error in change user password login");
+      setNewPassword("");
+      setOpenDialog(false);
+    }
+    catch (err) {
+      setLoading(false);
+      console.log(err, " error in change password");
     }
   }
 
@@ -249,7 +224,7 @@ const Users = () => {
         }}
         passwordError={passwordError}
         onClose={() => setOpenDialog(false)}
-        title={`Are sure to change ${selectedUser.email} passowrd?`}
+        title={`Are sure to change ${selectedUser && selectedUser.email} passowrd?`}
         onEyeClick={() => setShowPassword(!showPassword)}
       />
 

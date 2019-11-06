@@ -38,6 +38,7 @@ const AppDialog = props => {
       <DialogContent>
         {!loading ? (
           <PasswordField
+            id="pass"
             value={password}
             loading={loading}
             onChange={onChange}

@@ -37,12 +37,13 @@ import { createUser, route } from '../../redux/actions/actions';
 const useStyles = makeStyles(theme => ({
   root: {
     flex: 1,
-    height: '100vh',
+    minHeight: '100vh',
     display: 'flex',
-    padding: "40px 10px 10px 10px",
+    padding: "0px 10px 0px 10px",
   },
   paper: {
     height: 500,
+    marginTop: 60,
     display: 'flex',
     padding: "0px 30px",
     textAlign: 'center',
@@ -50,6 +51,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'center',
     color: theme.palette.text.secondary,
+    boxShadow: "rgba(0,0,0,0.2) 5px 5px 5px",
   },
   logo: {
     width: 80,

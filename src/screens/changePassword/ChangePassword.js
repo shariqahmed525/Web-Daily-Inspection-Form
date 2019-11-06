@@ -35,19 +35,21 @@ import { route, updatePassword } from '../../redux/actions/actions.js';
 const useStyles = makeStyles(theme => ({
   root: {
     flex: 1,
-    height: '100vh',
+    minHeight: '100vh',
     display: 'flex',
-    padding: "40px 10px 10px 10px",
+    padding: "0px 10px 0px 10px",
   },
   paper: {
-    height: 410,
+    height: 400,
+    marginTop: 60,
     display: 'flex',
-    textAlign: 'center',
     padding: "0px 30px",
+    textAlign: 'center',
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
     color: theme.palette.text.secondary,
+    boxShadow: "rgba(0,0,0,0.2) 5px 5px 5px",
   },
   margin: {
     margin: theme.spacing(2),
@@ -157,6 +159,7 @@ const ChangePassword = () => {
             </Typography>
 
             <PasswordField
+              id="pass"
               title="New Password"
               value={password}
               error={passwordError}
@@ -169,9 +172,10 @@ const ChangePassword = () => {
             />
 
             <PasswordField
-              title="Confirm Password"
+              id="cpass"
               value={cPassword}
               error={cPasswordError}
+              title="Confirm Password"
               showPassword={showPassword}
               onChange={({ target }) => {
                 setCPasswordError("");

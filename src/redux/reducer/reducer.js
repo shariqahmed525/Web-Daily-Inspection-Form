@@ -18,9 +18,6 @@ const reducer = (state = { users: [], }, action) => {
     case "USER": {
       return { ...state, user: action.user };
     }
-    case "CLONE_USER": {
-      return { ...state, cloneUser: action.cloneUser };
-    }
     case "ALL_FORMS": {
       return { ...state, allForm: action.allForm };
     }
