@@ -27,7 +27,6 @@ import {
 
 import AppBar from '../../components/appBar/AppBar';
 import Drawable from '../../components/drawable/Drawable';
-
 import {
   stableSort,
   getSorting,
@@ -81,9 +80,9 @@ const Admins = () => {
   const classes = useStyles();
 
   const [page, setPage] = useState(0);
-  const [admins, setAdmins] = useState([]);
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [searchTxt, setSearchTxt] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -196,7 +195,7 @@ const Admins = () => {
                   <TableRow>
                     <TableCell colSpan={5} align="center">
                       <p style={{ color: "red", marginTop: 10 }}>
-                        No User Found
+                        No Admin Found
                       </p>
                     </TableCell>
                   </TableRow>

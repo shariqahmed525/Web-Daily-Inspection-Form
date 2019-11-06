@@ -8,7 +8,6 @@ import {
   PersonAdd,
   SupervisorAccount,
 } from '@material-ui/icons';
-import Axios from 'axios';
 
 export const drawableItems = [
   {
@@ -61,10 +60,3 @@ export const FIREBASE_URL = "https://us-central1-inspectionform-364ca.cloudfunct
 export const UPDATE_PASSWORD = "/changePasswordFromAuthentications";
 export const DELETE_USER = "/deleteUserFromAuthentications";
 
-export const axios = Axios.create({
-  // baseURL: "http://localhost:5001/inspectionform-364ca/us-central1",
-  baseURL: FIREBASE_URL,
-  headers: {
-    "Access-Control-Allow-Origin": "*"
-  }
-});

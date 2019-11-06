@@ -37,13 +37,14 @@ import {
   getSorting,
 } from "../../constant/functions";
 import { store } from '../../redux/store/store';
-import { route } from '../../redux/actions/actions';
+import { route, getAdmins, getUsers } from '../../redux/actions/actions';
 import Loader from '../../components/loader/Loader';
 import {
   DELETE_USER,
   UPDATE_PASSWORD,
   FIREBASE_URL,
 } from '../../constant/helper';
+import { AUTH } from '../../constant/firebase';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -99,6 +100,7 @@ const Users = () => {
   const classes = useStyles();
 
   const [page, setPage] = useState(0);
+  const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState([]);
@@ -142,7 +144,8 @@ const Users = () => {
 
   const getStateFromStore = () => {
     const { reducer } = store.getState();
-    const { users } = reducer;
+    const { users, user } = reducer;
+    setUser(user);
     setUsers(users);
     setIsLoading(false);
   }
@@ -191,11 +194,22 @@ const Users = () => {
   }
 
   const _delete = async (uid) => {
+    const { email, password } = user;
     try {
       setDisabled(true);
       await fetch(`${FIREBASE_URL}${DELETE_USER}?userId=${uid}&collectionName=users`, {
         mode: "no-cors",
       })
+      AUTH.signInWithEmailAndPassword(email, password).then((res) => {
+        store.dispatch({
+          email,
+          password,
+          type: "LOGIN_USER",
+          uid: res.user.uid,
+        })
+      })
+      store.dispatch(getUsers());
+      store.dispatch(getAdmins());
       setDisabled(false);
     } catch (error) {
       setDisabled(false);
