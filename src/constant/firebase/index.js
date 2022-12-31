@@ -7,12 +7,6 @@ import "firebase/messaging"; // for cloud messaging
 import "firebase/functions"; // for cloud functions
 
 const config = {
-  apiKey: "AIzaSyDyaC7RrBFuzIhLC_tdfRt8mQb-hxPtJR8",
-  authDomain: "inspectionform-364ca.firebaseapp.com",
-  databaseURL: "https://inspectionform-364ca.firebaseio.com",
-  projectId: "inspectionform-364ca",
-  storageBucket: "inspectionform-364ca.appspot.com",
-  messagingSenderId: "566949544267"
 };
 firebase.initializeApp(config);
 
