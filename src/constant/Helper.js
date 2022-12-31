@@ -56,7 +56,7 @@ export const validateEmail = (email) => {
   return re.test(email);
 }
 
-export const FIREBASE_URL = "https://us-central1-inspectionform-364ca.cloudfunctions.net";
+export const FIREBASE_URL = "";
 export const UPDATE_PASSWORD = "/changePasswordFromAuthentications";
 export const DELETE_USER = "/deleteUserFromAuthentications";
 
